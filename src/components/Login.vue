@@ -8,19 +8,19 @@
         <Col span="12">
         <Card class="card">
           <br>
-        <p slot="title" class="message">请先登录</p>
-          <Input v-model="userId"  placeholder="请输入您的电子邮箱">
-              <span slot="prepend"><Icon type="ios-person-outline" slot="prepend"></Icon></span>
-          </Input>
-          <br>
-          <Input type="password" v-model="password" placeholder="请输入您的账号密码">
-              <span slot="prepend"><Icon type="ios-lock-outline" slot="prepend"></Icon></span>
-          </Input>
-          <br>
-          <Button type="primary" @click="handleSubmit">登录</Button>
-          <Button type="warning" @click="goSign">注册</Button>
-          <br>
-    </Card>
+            <p slot="title" class="message">请先登录</p>
+              <Input v-model="userId"  placeholder="请输入您的电子邮箱">
+                  <span slot="prepend"><Icon type="ios-person-outline" slot="prepend"></Icon></span>
+              </Input>
+              <br>
+              <Input type="password" v-model="password" placeholder="请输入您的账号密码">
+                  <span slot="prepend"><Icon type="ios-lock-outline" slot="prepend"></Icon></span>
+              </Input>
+              <br>
+              <Button type="primary" @click="handleSubmit">登录</Button>
+              <Button type="warning" @click="goSign">注册</Button>
+              <br>
+        </Card>
         </Col>
     </Row>
     

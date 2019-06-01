@@ -9,23 +9,6 @@
         <FormItem label="队长姓名" prop="leaderName">
             <Input v-model="formValidate.leaderName" placeholder="请输入您的姓名"></Input>
         </FormItem>
-        <Row>
-            <Col span="8">
-            <FormItem label="队员1" prop="member1">
-                <Input v-model="formValidate.member1" placeholder="请输入队员1的姓名"></Input>
-            </FormItem>
-            </Col>
-            <Col span="8">
-            <FormItem label="队员2" prop="member2">
-                <Input v-model="formValidate.member2" placeholder="请输入队员2的姓名"></Input>
-            </FormItem>
-            </Col>
-            <Col span="8">
-            <FormItem label="队员3" prop="member3">
-                <Input v-model="formValidate.member3" placeholder="请输入队员3的姓名"></Input>
-            </FormItem>
-            </Col>
-        </Row>
         <FormItem label="学历" prop="grade">
             <Select v-model="formValidate.grade" placeholder="请选择您的学历">
                 <Option value="大一">大一</Option>
@@ -65,9 +48,6 @@ export default {
                 formValidate: {
                     userId: '',
                     leaderName: '',
-                    member1: '',
-                    member2: '',
-                    member3: '',
                     grade: '',
                     major: '',
                     college: '',

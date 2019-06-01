@@ -8,6 +8,22 @@
                         <MenuItem name="1">
                             欢迎，{{leaderName}}
                         </MenuItem>
+                        <MenuItem name="2" @click.native="mineVisible = true">
+                            个人中心
+                        </MenuItem>
+                        <Modal
+                            v-model="mineVisible"
+                            title="个人中心"
+                            ok-text="修改密码"
+                            @on-ok="changePsVisible = true"
+                            @on-cancel="cancel">
+                            <p>姓名：</p>
+                            <p>电子邮箱：</p>
+                            <p>学历：</p>
+                            <p>所读专业：</p>
+                            <p>所属院校：</p>
+                            <p>联系电话：</p>
+                        </Modal>
                         <MenuItem name="3" @click.native="logout">
                             <Icon type="md-log-out" />
                             退出
@@ -93,10 +109,16 @@ export default {
   name: 'Student',
   data () {
             return {
+                mineVisible: false,
+                changePsVisible: false,
                 uploadData: {
                     userId: '',
                     link: '',
-                    workName: ''
+                    workName: '',
+                    teacherName: '',
+                    member1: '',
+                    member2: '',
+                    member3: ''
                 },
                 token: {
                     token:''
@@ -119,7 +141,7 @@ export default {
                 state: -1
             }
         },
-        mounted() {
+        created() {
             this.uploadData.userId = this.Cookies.get('userId');
             this.token.token = this.Cookies.get('token');
             //获取队伍信息
@@ -175,6 +197,7 @@ export default {
               })
         },
         ok () {
+
             this.$Message.info('Clicked ok');
         },
         cancel () {

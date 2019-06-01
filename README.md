@@ -13,6 +13,14 @@
     - [1.3.2 查看评分情况](#132-%E6%9F%A5%E7%9C%8B%E8%AF%84%E5%88%86%E6%83%85%E5%86%B5)
     - [1.3.3 评分](#133-%E8%AF%84%E5%88%86)
     - [1.3.4 公布](#134-%E5%85%AC%E5%B8%83)
+  - [补充及api修改API](#%E8%A1%A5%E5%85%85%E5%8F%8Aapi%E4%BF%AE%E6%94%B9api)
+    - [注册接口删除队员信息](#%E6%B3%A8%E5%86%8C%E6%8E%A5%E5%8F%A3%E5%88%A0%E9%99%A4%E9%98%9F%E5%91%98%E4%BF%A1%E6%81%AF)
+    - [学生获取个人信息](#%E5%AD%A6%E7%94%9F%E8%8E%B7%E5%8F%96%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF)
+    - [修改个人信息](#%E4%BF%AE%E6%94%B9%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF)
+    - [修改密码](#%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81)
+    - [获取报名系统状态](#%E8%8E%B7%E5%8F%96%E6%8A%A5%E5%90%8D%E7%B3%BB%E7%BB%9F%E7%8A%B6%E6%80%81)
+    - [修改获取队伍信息接口](#%E4%BF%AE%E6%94%B9%E8%8E%B7%E5%8F%96%E9%98%9F%E4%BC%8D%E4%BF%A1%E6%81%AF%E6%8E%A5%E5%8F%A3)
+    - [修改原项目信息提交接口为报名接口](#%E4%BF%AE%E6%94%B9%E5%8E%9F%E9%A1%B9%E7%9B%AE%E4%BF%A1%E6%81%AF%E6%8F%90%E4%BA%A4%E6%8E%A5%E5%8F%A3%E4%B8%BA%E6%8A%A5%E5%90%8D%E6%8E%A5%E5%8F%A3)
 
 <!-- /TOC -->
 
@@ -254,3 +262,117 @@
 ```
 
 ---
+
+## 补充及api修改API
+
+### 注册接口删除队员信息
+
+- 接口：/match/sign
+- 传的字段有：
+
+```json
+userId: '',
+leaderName: '',
+grade: '',
+major: '',
+college: '',
+phone: '',
+password: ''
+```
+
+### 学生获取个人信息
+
+- get /match/mine/{userId}
+
+-return:
+
+```json
+{
+  "code": 0,
+  "data": {
+    "name",
+    "email",
+    "education",
+    "major",
+    "college",
+    "phone"
+  }
+}
+```
+
+### 修改个人信息
+
+- PUT /match/mine
+- payload: 传学生的id和修改的项目（每次只改一个）
+
+```json
+{
+  "userId",
+  "major"
+}
+```
+
+- return: code: 0
+
+### 修改密码
+
+- PUT /match/mine
+- payload: 传id和修改的项目（每次只改一个）
+
+```json
+{
+  "userId",
+  "oldPs",
+  "newPs"
+}
+```
+
+- return: code: 0
+
+### 获取报名系统状态
+
+- GET /match/enterState
+- return:
+
+```json
+{
+  "code",
+  enterState 0 未开放 1 已开放
+}
+```
+
+### 修改获取队伍信息接口
+
+- 接口: /match/work/{userId}
+- 需要返回的字段：
+
+```json
+leaderName,
+teacherName,
+member1,
+member2,
+member3,
+workName,
+link,
+workUrl,
+score,
+honor,
+state 新增-1 表示没有报名
+```
+
+### 修改原项目信息提交接口为报名接口
+
+- 增加指导老师和队员字段,传的内容如下：
+
+```json
+{
+  file,
+  userId,
+  workName,
+  link,
+  teacherName,
+  member1,
+  member2,
+  member3
+}
+```
