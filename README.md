@@ -25,7 +25,7 @@
     - [评分裁判：](#%E8%AF%84%E5%88%86%E8%A3%81%E5%88%A4)
       - [评分裁判评分操作](#%E8%AF%84%E5%88%86%E8%A3%81%E5%88%A4%E8%AF%84%E5%88%86%E6%93%8D%E4%BD%9C)
     - [加密裁判：](#%E5%8A%A0%E5%AF%86%E8%A3%81%E5%88%A4)
-      - [获取](#%E8%8E%B7%E5%8F%96)
+      - [获取评分列表](#%E8%8E%B7%E5%8F%96%E8%AF%84%E5%88%86%E5%88%97%E8%A1%A8)
     - [管理员](#%E7%AE%A1%E7%90%86%E5%91%98)
       - [管理员录分操作](#%E7%AE%A1%E7%90%86%E5%91%98%E5%BD%95%E5%88%86%E6%93%8D%E4%BD%9C)
 
@@ -410,7 +410,56 @@ workId: 1
 
 - 身份："E"
 
-#### 获取
+#### 获取评分列表
+
+- GET /match/scoreList?page=
+
+- return:
+- judge:每个评委评的kszx分
+- khfw,yytg:管理员录入的两部分机考分
+- score:最终计算出来的分数
+- 只有在复核状态才会发送这个请求
+
+```json
+{
+  "code": 0,
+  "data": {
+    "scoreList": [
+      {
+        "workId": "123",
+        "workName": "work1",
+        "judge1": 50,
+        "judge2": 50,
+        "judge3": 50,
+        "judge4": 50,
+        "judge5": 50,
+        "khfw": 20,
+        "yytg": 11,
+        "score": 81,
+        "honor": "三等奖"
+      },
+      {
+        "workId": "123",
+        "workName": "work1",
+        "judge1": 50,
+        "judge2": 50,
+        "judge3": 50,
+        "judge4": 50,
+        "judge5": 50,
+        "khfw": 20,
+        "yytg": 11,
+        "score": 81,
+        "honor": "三等奖"
+      }
+    ],
+    "page": {
+      eachPage: 5
+      totalPage: 3
+      totalSize: 12
+    }
+  }
+}
+```
 
 ### 管理员
 
