@@ -26,8 +26,15 @@
       - [评分裁判评分操作](#%E8%AF%84%E5%88%86%E8%A3%81%E5%88%A4%E8%AF%84%E5%88%86%E6%93%8D%E4%BD%9C)
     - [加密裁判：](#%E5%8A%A0%E5%AF%86%E8%A3%81%E5%88%A4)
       - [获取评分列表](#%E8%8E%B7%E5%8F%96%E8%AF%84%E5%88%86%E5%88%97%E8%A1%A8)
+      - [选择导出excel](#%E9%80%89%E6%8B%A9%E5%AF%BC%E5%87%BAexcel)
     - [管理员](#%E7%AE%A1%E7%90%86%E5%91%98)
       - [管理员录分操作](#%E7%AE%A1%E7%90%86%E5%91%98%E5%BD%95%E5%88%86%E6%93%8D%E4%BD%9C)
+      - [给项目分配裁判](#%E7%BB%99%E9%A1%B9%E7%9B%AE%E5%88%86%E9%85%8D%E8%A3%81%E5%88%A4)
+      - [切换系统状态](#%E5%88%87%E6%8D%A2%E7%B3%BB%E7%BB%9F%E7%8A%B6%E6%80%81)
+      - [获取评分进度](#%E8%8E%B7%E5%8F%96%E8%AF%84%E5%88%86%E8%BF%9B%E5%BA%A6)
+      - [获取评委列表](#%E8%8E%B7%E5%8F%96%E8%AF%84%E5%A7%94%E5%88%97%E8%A1%A8)
+      - [添加评委账号](#%E6%B7%BB%E5%8A%A0%E8%AF%84%E5%A7%94%E8%B4%A6%E5%8F%B7)
+      - [删除评委账号](#%E5%88%A0%E9%99%A4%E8%AF%84%E5%A7%94%E8%B4%A6%E5%8F%B7)
 
 <!-- /TOC -->
 
@@ -418,6 +425,7 @@ workId: 1
 - judge:每个评委评的kszx分
 - khfw,yytg:管理员录入的两部分机考分
 - score:最终计算出来的分数
+- rank:排名
 - 只有在复核状态才会发送这个请求
 
 ```json
@@ -436,6 +444,7 @@ workId: 1
         "khfw": 20,
         "yytg": 11,
         "score": 81,
+        "rank": 1,
         "honor": "三等奖"
       },
       {
@@ -449,17 +458,22 @@ workId: 1
         "khfw": 20,
         "yytg": 11,
         "score": 81,
+        "rank": 2,
         "honor": "三等奖"
       }
     ],
     "page": {
-      eachPage: 5
-      totalPage: 3
-      totalSize: 12
+      "eachPage": 5,
+      "totalPage": 3,
+      "totalSize": 12
     }
   }
 }
 ```
+
+#### 选择导出excel
+
+- get /match/downLoad?workId=123,345,5,4
 
 ### 管理员
 
@@ -480,3 +494,83 @@ workId: 1
 
 ---
 
+#### 给项目分配裁判
+
+- POST /match/assign
+- payload: 限定5个裁判，如果二次分配则覆盖
+
+```json
+{
+  "workId": "124",
+  "judge": ["123","234","2233","2244","22324"]
+}
+```
+
+- return: code: 0
+
+---
+
+#### 切换系统状态
+
+- PUT /match/state/{state}
+- state为公布阶段时会请求发布通知接口发出公布通知。
+- 下载excel地址：/match/downLoad
+- return : code: 0
+
+#### 获取评分进度
+
+- GET /match/scoreProcess
+- return:
+
+```json
+{
+  "code": 0,
+  "data": 50
+}
+```
+
+#### 获取评委列表
+
+- GET /match/judge?type=
+- return:
+
+```json
+{
+  "code": 0,
+  "data": [
+    {
+      "userId": "123"
+    },
+    {
+      "userId": "123"
+    }
+  ]
+}
+```
+
+#### 添加评委账号
+
+- POST /match/judge
+- payload:
+
+```json
+{
+  "type": "M",
+  "userId": "123",
+  "password": "123456"
+}
+```
+
+- return: code: 0
+
+#### 删除评委账号
+
+- DELETE /match/judge
+- payload:
+
+```json
+{
+  "type": "M",
+  "userId": "123"
+}
+```
