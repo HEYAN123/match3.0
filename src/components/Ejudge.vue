@@ -46,16 +46,6 @@
                             :current="nowPage"
                             @on-change="pagechange"
                             />
-                        <Divider>队伍信息</Divider>
-                        <Table border :columns="teamTitle" :data="teamList"></Table>
-                        <br>
-                        <Page :total="teamPage.totalSize"
-                            size="small"
-                            :page-size="teamPage.eachPage"
-                            show-total
-                            :current="nowTeamPage"
-                            @on-change="teampagechange"
-                            />
                     </div>
                 </Card>
             </Content>
@@ -146,46 +136,7 @@ export default {
                 ],
                 tableData: [
                 ],
-                teamTitle: [
-                    {
-                        title: '队长',
-                        key: 'leaderName',
-                        align: 'center'
-                    },
-                    {
-                        title: '指导老师',
-                        key: 'teacherName',
-                        align: 'center'
-                    },
-                    {
-                        title: '队员1',
-                        key: 'member1',
-                        align: 'center'
-                    },
-                    {
-                        title: '队员2',
-                        key: 'member2',
-                        align: 'center'
-                    },
-                    {
-                        title: '专业',
-                        key: 'major',
-                        align: 'center'
-                    },
-                    {
-                        title: '项目编号',
-                        key: 'workId',
-                        align: 'center'
-                    }
-                ],
-                teamList: [],
                 sysState: 4,
-                nowTeamPage: 1,
-                teamPage: {
-                    eachPage: 5,
-                    totalSize: 15,
-                    totalPage: 5
-                },
                 nowPage: 1,
                 page: {
                     eachPage: 5,
@@ -219,33 +170,9 @@ export default {
                         this.$Message.error(res.data.message);
                     }
                 });
-                this.axios.get(this.API+'student?page=1', {
-                    headers:{"token": this.Cookies.get('token')}
-                }).then(res => {
-                    if(res.data.code === 0) {
-                        this.teamList = res.data.data.studentList;
-                        this.teamPage = res.data.data.page;
-                    }
-                    else {
-                        this.$Message.error(res.data.message);
-                    }
-                });
+                
         },
         methods: {
-            teampagechange(index) {
-                this.nowTeamPage = index;
-                this.axios.get(this.API+'student?page='+this.nowTeamPage, {
-                    headers:{"token": this.Cookies.get('token')}
-                }).then(res => {
-                    if(res.data.code === 0) {
-                        this.teamList = res.data.data.studentList;
-                        this.teamPage = res.data.data.teamPage;
-                    }
-                    else {
-                        this.$Message.error(res.data.message);
-                    }
-                });
-            },
             pagechange (index) {
                 this.nowPage = index;
                 this.axios.get(this.API+'scoreList?page='+this.nowPage, {

@@ -157,6 +157,16 @@
                             请输入账号密码：
                             <Input v-model="addForm.password" style="width:auto;"></Input>
                         </Modal>
+                        <Divider>队伍信息</Divider>
+                        <Table border :columns="teamTitle" :data="teamList"></Table>
+                        <br>
+                        <Page :total="teamPage.totalSize"
+                            size="small"
+                            :page-size="teamPage.eachPage"
+                            show-total
+                            :current="nowTeamPage"
+                            @on-change="teampagechange"
+                            />
                      <Divider>通知</Divider>
                      <Table border :columns="itemsTitle" :data="items">
                          <template slot-scope="{ row }" slot="newsTime">
@@ -202,6 +212,45 @@ export default {
   name: 'Teacher',
   data () {
             return {
+                teamTitle: [
+                    {
+                        title: '队长',
+                        key: 'leaderName',
+                        align: 'center'
+                    },
+                    {
+                        title: '指导老师',
+                        key: 'teacherName',
+                        align: 'center'
+                    },
+                    {
+                        title: '队员1',
+                        key: 'member1',
+                        align: 'center'
+                    },
+                    {
+                        title: '队员2',
+                        key: 'member2',
+                        align: 'center'
+                    },
+                    {
+                        title: '专业',
+                        key: 'major',
+                        align: 'center'
+                    },
+                    {
+                        title: '项目编号',
+                        key: 'workId',
+                        align: 'center'
+                    }
+                ],
+                teamList: [],
+                nowTeamPage: 1,
+                teamPage: {
+                    eachPage: 5,
+                    totalSize: 15,
+                    totalPage: 5
+                },
                 modal2: false,
                 nowItem: {
                 },
@@ -350,6 +399,17 @@ export default {
             }
         },
         created () {
+            this.axios.get(this.API+'student?page=1', {
+                    headers:{"token": this.Cookies.get('token')}
+                }).then(res => {
+                    if(res.data.code === 0) {
+                        this.teamList = res.data.data.studentList;
+                        this.teamPage = res.data.data.page;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                });
             //获取通知列表
             this.axios.get(this.API+'news',{headers:{"token": this.Cookies.get('token')}}).
             then(res => {
@@ -414,6 +474,20 @@ export default {
                 });
         },
         methods: {
+            teampagechange(index) {
+                this.nowTeamPage = index;
+                this.axios.get(this.API+'student?page='+this.nowTeamPage, {
+                    headers:{"token": this.Cookies.get('token')}
+                }).then(res => {
+                    if(res.data.code === 0) {
+                        this.teamList = res.data.data.studentList;
+                        this.teamPage = res.data.data.teamPage;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                });
+            },
             newsHandle(newsId) {
                 this.modal2 = true;
                 this.axios.get(this.API+'newsContent/'+newsId,{headers:{"token": this.Cookies.get('token')}}).
