@@ -158,7 +158,11 @@
                             <Input v-model="addForm.password" style="width:auto;"></Input>
                         </Modal>
                         <Divider>队伍信息</Divider>
-                        <Table border :columns="teamTitle" :data="teamList"></Table>
+                        <Table border :columns="teamTitle" :data="teamList">
+                            <template slot-scope="{ row,index }" slot="action">
+                                <Button type="primary" :disabled="row.pass==1" size="small" style="margin-right: 5px" @click="passHandle(row.userId,index)">审核通过</Button>
+                            </template>
+                        </Table>
                         <br>
                         <Page :total="teamPage.totalSize"
                             size="small"
@@ -175,7 +179,7 @@
                         <template slot-scope="{ row }" slot="newsTitle">
                             {{row.newsTitle}}
                         </template>
-                        <template slot-scope="{ row,index }" slot="action">
+                        <template slot-scope="{ row }" slot="action">
                             <Button type="primary" size="small" style="margin-right: 5px" @click="newsHandle(row.newsId)">查看</Button>
                             <Button type="error" size="small" @click="newsDelete(row.newsId)">删除</Button>
                         </template>
@@ -241,6 +245,11 @@ export default {
                     {
                         title: '项目编号',
                         key: 'workId',
+                        align: 'center'
+                    },
+                    {
+                        title: '操作',
+                        slot: 'action',
                         align: 'center'
                     }
                 ],
@@ -365,6 +374,10 @@ export default {
                     {
                         title: '得分',
                         key: 'score'
+                    },
+                    {
+                        title: '所获奖项',
+                        key: 'honor'
                     },
                     {
                         title: '所获奖项',
@@ -706,6 +719,18 @@ export default {
                    if(res.data.code === 0) {
                        this.$Message.info('分配成功！');
                        this.assignVisible = false;
+                   }
+                   else {
+                       this.$Message.error(res.data.message);
+                   }
+               })
+            },
+            passHandle(userId,index) {
+                this.axios.put(this.API+'pass?userId='+userId).
+                then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('审核成功！');
+                       this.teamList[index].pass = 1;
                    }
                    else {
                        this.$Message.error(res.data.message);
