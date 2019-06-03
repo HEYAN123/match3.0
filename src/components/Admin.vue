@@ -480,7 +480,15 @@ export default {
                })
             },
             stateChange() {
-                console.log(this.sysState);
+                this.axios.put(this.API+'state/'+this.sysState).
+               then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('修改状态成功！');
+                   }
+                   else {
+                       this.$Message.error(res.data.message);
+                   }
+               })
             },
             removeJudge(type,userId) {
                 let param = {};
