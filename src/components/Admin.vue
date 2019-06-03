@@ -158,6 +158,27 @@
                             <Input v-model="addForm.password" style="width:auto;"></Input>
                         </Modal>
                      <Divider>通知</Divider>
+                     <Table border :columns="itemsTitle" :data="items">
+                         <template slot-scope="{ row }" slot="newsTime">
+                            {{row.newsTime}}
+                        </template>
+                        <template slot-scope="{ row }" slot="newsTitle">
+                            {{row.newsTitle}}
+                        </template>
+                        <template slot-scope="{ row,index }" slot="action">
+                            <Button type="primary" size="small" style="margin-right: 5px" @click="newsHandle(row.newsId)">查看</Button>
+                            <Button type="error" size="small" @click="newsDelete(row.newsId)">删除</Button>
+                        </template>
+                    </Table>
+                    <Modal
+                        v-model="modal2"
+                        title="通知"
+                        style="text-align: center;"
+                        >
+                        <h2>{{nowItem.newsTitle}}</h2>
+                        <p>{{nowItem.newsTime}}</p><br>
+                        <p v-html="nowItem.newsContent" style="text-align:left;"></p>
+                    </Modal><br>
                     <p>通知标题：<Input v-model="newsTitle" style="width: auto;"></Input></p><br>
                     <quill-editor
                       v-model="content" 
@@ -181,6 +202,27 @@ export default {
   name: 'Teacher',
   data () {
             return {
+                modal2: false,
+                nowItem: {
+                },
+                items: [],
+                itemsTitle: [
+                    {
+                        title: '通知时间',
+                        slot: 'newsTime',
+                        align: 'center'
+                    },
+                    {
+                        title: '通知标题',
+                        slot: 'newsTitle',
+                        align: 'center'
+                    },
+                    {
+                        title: '操作',
+                        slot: 'action',
+                        align: 'center'
+                    }
+                ],
                 assignJudge: [],
                 actWorkId: "",
                 assignVisible: false,
@@ -210,20 +252,10 @@ export default {
                     }
                 ],
                 Edata: [
-                    {
-                        userId: "123",
-                    },
-                    {
-                        userId: "123",
-                    }
+                    
                 ],
                 Tdata: [
-                    {
-                        userId: "123",
-                    },
-                    {
-                        userId: "123",
-                    }
+                   
                 ],
                 scoreProcess: 0,
                 sysState: 4,
@@ -257,7 +289,6 @@ export default {
                     isScore: '',
                     page: 1
                 },
-                
                 a1: '',
                 a2: '',
                 a3: '',
@@ -319,6 +350,16 @@ export default {
             }
         },
         created () {
+            //获取通知列表
+            this.axios.get(this.API+'news',{headers:{"token": this.Cookies.get('token')}}).
+            then(res => {
+                if(res.data.code === 0 ) {
+                    this.items = res.data.data;
+                }
+                else {
+                    this.$Message.error(res.data.message);
+                }
+            });
             this.leaderName = this.Cookies.get('userId');
             this.axios.get(this.API+'workList/'+this.Cookies.get('userId'), {
                     headers:{"token": this.Cookies.get('token')}
@@ -373,6 +414,29 @@ export default {
                 });
         },
         methods: {
+            newsHandle(newsId) {
+                this.modal2 = true;
+                this.axios.get(this.API+'newsContent/'+newsId,{headers:{"token": this.Cookies.get('token')}}).
+                then(res => {
+                    if(res.data.code === 0) {
+                        this.nowItem = res.data.data;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                })
+            },
+            newsDelete(newsId) {
+                this.axios.delete(this.API+'news/'+newsId,{headers:{"token": this.Cookies.get('token')}}).
+                then(res => {
+                    if(res.data.code === 0) {
+                        this.$Message.success("删除成功！");
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                })
+            },
             pagechange (index) {
                 this.search.page = index;
                 this.axiosSearch();
@@ -450,7 +514,7 @@ export default {
                         param[key] = obj[key];
                     }
                 }
-                this.axios.get(this.API+'workList', {
+                this.axios.get(this.API+'workList/admin', {
                     headers:{"token": this.Cookies.get('token')},
                     params: param
                 }).then(res => {

@@ -108,7 +108,8 @@
                         <p><span>项目链接：</span><a :href="link">{{link}}</a></p>
                         <p><span>项目文档：</span><a :href="workUrl">{{workUrl}}</a></p>
                         <br>
-                        <Button icon="ios-cloud-upload-outline" :disabled="this.sysState!==0">{{this.state==-1?'报名':'重新上传信息'}}</Button>
+                        
+                        <Button type="primary" @click="modal1 = true" icon="ios-cloud-upload-outline" :disabled="sysState!==0">{{state==-1?'报名':'重新上传信息'}}</Button>
                         <Modal
                             v-model="modal1"
                             title="项目信息提交"
@@ -176,7 +177,7 @@ export default {
                 score: "--",
                 honor: "--",
                 state: -1,
-                sysState: 5,
+                sysState: 4,
                 mineData: {
                     leaderName: "",
                     email: "",
@@ -230,11 +231,10 @@ export default {
                 }
             });
             // 获取系统状态
-            //获取通知列表
             this.axios.get(this.API+'state',{headers:{"token": this.Cookies.get('token')}}).
             then(res => {
                 if(res.data.code === 0 ) {
-                    this.sysState = res.data.state;
+                    this.sysState = res.data.data.state;
                 }
                 else {
                     this.$Message.error(res.data.message);
@@ -273,11 +273,8 @@ export default {
               })
         },
         ok () {
-
-            this.$Message.info('Clicked ok');
         },
         cancel () {
-            this.$Message.info('Clicked cancel');
         },
         changeData(item) {
             let param = {};
