@@ -639,7 +639,19 @@ export default {
                    else {
                        this.$Message.error(res.data.message);
                    }
-               })
+               });
+               if(this.sysState===2) {
+                   this.axios.get(this.API+'publish').
+                    then(res => {
+                        if(res.data.code === 0) {
+                            this.$Message.info('成绩计算完成！');
+                        }
+                        else {
+                            this.$Message.error(res.data.message);
+                        }
+                    });
+               }
+               
             },
             removeJudge(type,userId) {
                 let param = {};

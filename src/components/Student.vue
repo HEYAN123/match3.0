@@ -128,9 +128,9 @@
                         </Modal>
                         <br>
                         <Divider orientation="left">项目成绩</Divider>
-                        <span>项目得分：</span><h3 style="display: inline;color:red">{{score}}</h3>
+                        <span>项目得分：</span><h3 style="display: inline;color:red" v-if="sysState==3">{{score}}</h3>
                         <br><br>
-                        <span>所得奖项：</span><h3 style="display: inline;color:red">{{honor}}</h3>
+                        <span>所得奖项：</span><h3 style="display: inline;color:red" v-if="sysState==3">{{honor}}</h3>
                     </Card>
                         </Col>
                     </Row>
