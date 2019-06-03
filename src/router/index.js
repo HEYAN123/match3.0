@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import NewsManager from '@/components/NewsManager'
 import Login from '@/components/Login'
 import Sign from '@/components/Sign'
 import Student from '@/components/Student'
-import Teacher from '@/components/Teacher'
+import Admin from '@/components/Admin'
+import Ejudge from '@/components/Ejudge'
+import Tjudge from '@/components/Tjudge'
 
 Vue.use(Router)
 
@@ -23,14 +24,17 @@ export default new Router({
       name: 'Student',
       component: Student
     }, {
-      path: '/teacher',
-      name: 'Teacher',
-      component: Teacher
+      path: '/admin',
+      name: 'Admin',
+      component: Admin
     }, {
-      path: '/newsmanage',
-      name: 'NewsManager',
-      component: NewsManager
-    }
-  
+      path: '/ejudge',
+      name: 'Ejudge',
+      component: Ejudge
+    }, {
+      path: '/tjudge',
+      name: 'Tjudge',
+      component: Tjudge
+    }, 
   ]
 })

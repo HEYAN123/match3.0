@@ -306,7 +306,7 @@ password: ''
   "data": {
     "name",
     "email",
-    "education",
+    "grade",
     "major",
     "college",
     "phone"
@@ -346,7 +346,7 @@ password: ''
 ### 获取系统状态
 
 - GET /match/state
-- 状态改为流转方式：报名阶段 0，评分阶段 1，复核阶段 2，公布阶段 3，关闭阶段 5
+- 状态改为流转方式：报名阶段 0，评分阶段 1，复核阶段 2，公布阶段 3，关闭阶段 4
 - return:
 
 ```json
@@ -387,8 +387,7 @@ state 新增-1 表示没有报名
   link,
   teacherName,
   member1,
-  member2,
-  member3
+  member2
 }
 ```
 
@@ -514,7 +513,7 @@ workId: 1
 
 - PUT /match/state/{state}
 - state为公布阶段时会请求发布通知接口发出公布通知。
-- 下载excel地址：/match/downLoad
+- 下载excel地址：/match/download
 - return : code: 0
 
 #### 获取评分进度

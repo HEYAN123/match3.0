@@ -8,28 +8,30 @@
                         <MenuItem name="1">
                             欢迎，{{leaderName}}
                         </MenuItem>
+                        <MenuItem name="2" @click.native="mineVisible = true">
+                            修改密码
+                        </MenuItem>
                         <MenuItem name="3" @click.native="logout">
                             <Icon type="md-log-out" />
                             退出
                         </MenuItem>
+                        <Modal
+                            v-model="mineVisible"
+                            title="修改密码"
+                            @on-ok="changePassword"
+                            style="text-align:center;"
+                            >
+                            原账号密码：
+                            <Input type="password" v-model="mineData.oldPs" placeholder="请输入原账号密码" style="width: auto;" /><br><br>                                                            
+                            新账号密码：<Input type="password" v-model="mineData.newPs" placeholder="请输入新账号密码" style="width: auto;" />                                
+                                
+                        </Modal>
                     </div>
                 </Menu>
             </Header>
             <Content :style="{padding: '50px', marginBottom: '50px'}" class="layout-content">
                 <Card class="layout-card">
                     <div style="min-height: 200px;padding-bottom:100px;">
-                        <div v-show="scorePublish">
-                            <Divider>操作</Divider>
-                        <Row>
-                            <Button type="warning" @click="scoreList">公布成绩</Button>
-                            <Modal
-                                style="text-align: center"
-                                v-model="modal3"
-                                title="比赛结果">
-                                <Table border :columns="resultCol" :data="resultData"></Table>
-                            </Modal>
-                        </Row>
-                        </div>
                         <Divider>评分</Divider>
                         <Row style="text-align: left">
                             <Col span="6">
@@ -100,29 +102,10 @@
                                         <span slot="prepend">视觉营销</span>
                                     </Input>
                                 </Col>
-                            </Row>
                             <br>
-                            <h3>客户服务（10分）：</h3>
-                            <br>
-                            <Row>
-                                <Col span="8">
-                                    <Input v-model="khfw" placeholder="10分">
-                                        <span slot="prepend">回答准确</span>
-                                    </Input>
-                                </Col>
-                            </Row>
-                            <br>
-                            <h3>运营推广（60分）：</h3>
-                            <br>
-                            <Row>
-                                <Col span="8">
-                                    <Input v-model="yytg" placeholder="60分">
-                                        <span slot="prepend">运营得分</span>
-                                    </Input>
-                                </Col>
-                            </Row>
+                            </row>
                         </Modal>
-                        </Row>
+                        </row>
                     </div>
                 </Card>
             </Content>
@@ -131,10 +114,64 @@
 </template>
 
 <script>
+import { quillEditor } from 'vue-quill-editor'
+
 export default {
   name: 'Teacher',
   data () {
             return {
+                mineData: {
+                    oldPs: "",
+                    newPs: "",
+                    userId: "",
+                },
+                mineVisible: false,
+                addJudgeVisible: false,
+                addForm: {
+                    type: "",
+                    userId: "",
+                    password: ""
+                },
+                Etitle: [
+                    {
+                        title: '账号',
+                        slot: 'userId',
+                        align: 'center'
+                    },
+                    {
+                        title: '操作',
+                        slot: 'action',
+                        align: 'center'
+                    }
+                ],
+                Edata: [
+                    {
+                        userId: "123",
+                    },
+                    {
+                        userId: "123",
+                    }
+                ],
+                Tdata: [
+                    {
+                        userId: "123",
+                    },
+                    {
+                        userId: "123",
+                    }
+                ],
+                scoreProcess: 0,
+                sysState: 4,
+                editorOption:{
+                    modules:{
+                        toolbar:[
+                            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                            ['blockquote', 'code-block']
+                        ]
+                    }
+                },
+                content:"",
+                newsTitle: "",
                 page: {
                     eachPage: 5,
                     totalSize: 15,
@@ -164,7 +201,6 @@ export default {
                 yytg: '',
                 kszx: '',
                 khfw: '',
-                scorePublish: false,
                 modal1: false,
                 modal2: false,
                 modal3: false,
@@ -217,7 +253,8 @@ export default {
                             return h('div', [
                                 h('Button', {
                                     props: {
-                                        type: 'success'
+                                        type: 'success',
+                                        disabled: this.sysState!=1
                                     },
                                     style: {
                                         marginRight: '5px'
@@ -235,15 +272,54 @@ export default {
                 data6: []
             }
         },
-        mounted () {
-            this.scorePublish = this.Cookies.get('type') === 'Z' ? true: false;
+        created () {
             this.leaderName = this.Cookies.get('userId');
-            this.axios.get(this.API+'workList', {
+            this.axios.get(this.API+'workList/'+this.Cookies.get('userId'), {
                     headers:{"token": this.Cookies.get('token')}
                 }).then(res => {
                     if(res.data.code === 0) {
                         this.data6 = res.data.data.workList;
                         this.page = res.data.data.page;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                });
+                this.axios.get(this.API+'state', {
+                    headers:{"token": this.Cookies.get('token')}
+                }).then(res => {
+                    if(res.data.code === 0) {
+                        this.sysState = res.data.data.state;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                });
+                this.axios.get(this.API+'scoreProcess', {
+                    headers:{"token": this.Cookies.get('token')}
+                }).then(res => {
+                    if(res.data.code === 0) {
+                        this.scoreProcess = res.data.data.data;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                });
+                this.axios.get(this.API+'judge?type=E', {
+                    headers:{"token": this.Cookies.get('token')}
+                }).then(res => {
+                    if(res.data.code === 0) {
+                        this.Edata = res.data.data;
+                    }
+                    else {
+                        this.$Message.error(res.data.message);
+                    }
+                });
+                this.axios.get(this.API+'judge?type=T', {
+                    headers:{"token": this.Cookies.get('token')}
+                }).then(res => {
+                    if(res.data.code === 0) {
+                        this.Tdata = res.data.data;
                     }
                     else {
                         this.$Message.error(res.data.message);
@@ -285,45 +361,31 @@ export default {
                     })
             },
             scoreList () {
-                this.modal3 = true;
-                this.axios.get(this.API+'publish',{headers:{"token": this.Cookies.get('token')}}).
-                then(res => {
-                    if(res.data.code === 0) {
-                        this.$Message.info('公布成功');
-                        for(let i = 0;i<res.data.data.length;i++) {
-                            let tempMember = [];
-                            if(res.data.data[i].member1) {
-                                tempMember.push(res.data.data[i].member1)
-                            }
-                            if(res.data.data[i].member2) {
-                                tempMember.push(res.data.data[i].member2)
-                            }
-                            if(res.data.data[i].member3) {
-                                tempMember.push(res.data.data[i].member3)
-                            }
-                            let tempObj = {};
-                            tempObj = res.data.data[i];
-                            tempObj.members = tempMember;
-                            this.resultData.push(tempObj);
-                        }
-                    }
-                    else {
-                        this.$Message.error(res.data.message);
-                    }
-                })
+                let time = new Date().toLocaleDateString();
+               this.axios.post(this.API+'news',{
+                   newsTitle: "成绩公示",
+                   newsTime: time,
+                   newsContent: "<a href='http://120.79.141.169:8080/match2/api/download'>点击下载成绩公示表</a>"
+                   },{headers:{"token": this.Cookies.get('token')}}).
+               then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('发布成功！');
+                   }
+                   else {
+                       this.$Message.error(res.daata.message);
+                   }
+               })
             },
             ok () {
-                let count = this.Cookies.get('userId').charAt((this.Cookies.get('userId').length)-1);
                 this.kszx = parseFloat(this.a1?this.a1:0)+parseFloat(this.a2?this.a2:0)+parseFloat(this.a3?this.a3:0)+parseFloat(this.a4?this.a4:0)+parseFloat(this.a5?this.a5:0);
                 let temp = {};
-                temp['yytg'+count] = this.yytg?parseFloat(this.yytg):0;
-                temp['kszx'+count] = this.kszx?this.kszx:0;
-                temp['khfw'+count] = this.khfw?parseFloat(this.khfw):0;
+                temp['score'] = this.kszx?this.kszx:0;
                 temp['workId'] = this.nowData.id;
                
-                this.axios.post(this.API+'score',temp,{headers:{"token": this.Cookies.get('token')}}).then(res => {
+                this.axios.post(this.API+'score/'+this.Cookies.get('userId'),temp,{headers:{"token": this.Cookies.get('token')}}).then(res => {
                     if(res.data.code === 0) {
                         this.$Message.info('评分成功');
+                        this.modal1 = false;
                     }
                     else {
                         this.$Message.error(res.data.message);
@@ -359,6 +421,68 @@ export default {
             handleSearch () {
                 this.search.page = 1;
                 this.axiosSearch();
+            },
+            handleClick() {
+              let time = new Date().toLocaleDateString();
+               this.axios.post(this.API+'news',{newsTitle: this.newsTitle,newsTime: time,newsContent: this.content},{headers:{"token": this.Cookies.get('token')}}).
+               then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('发布成功！');
+                   }
+                   else {
+                       this.$Message.error(res.data.message);
+                   }
+               })
+            },
+            stateChange() {
+                console.log(this.sysState);
+            },
+            removeJudge(type,userId) {
+                let param = {};
+                param.type = type;
+                param.userId = userId
+                this.axios.delete(this.API+'judge',{
+                    data: {
+                        ...param
+                    }
+                }).then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('删除成功！');
+                   }
+                   else {
+                       this.$Message.error(res.data.message);
+                   }
+               })
+            },
+            addVisible(type) {
+                this.addJudgeVisible = true;
+                this.addForm.type = type;
+            },
+            addSubmit() {
+                this.axios.post(this.API+'judge',{
+                    ...this.addForm
+                }).then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('添加成功！');
+                   }
+                   else {
+                       this.$Message.error(res.data.message);
+                   }
+               })
+            },
+            changePassword() {
+                this.mineData.userId = this.Cookies.get('userId');
+                this.axios.post(this.API+'mine',{
+                    ...this.mineData
+                }).then(res => {
+                   if(res.data.code === 0) {
+                       this.$Message.info('修改成功！');
+                       this.mineVisible = false;
+                   }
+                   else {
+                       this.$Message.error(res.data.message);
+                   }
+               })
             }
            
         }
@@ -390,7 +514,7 @@ export default {
     margin: 0 auto;
     margin-right: 10px;
 }
-.layout-content {
+.layout-content .ivu-layout-content {
     background-color: #81A0AA;
 }
 

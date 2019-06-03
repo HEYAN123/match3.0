@@ -57,14 +57,19 @@ export default {
                   path: '/student'
               })
             }
-            else if(res.data.data.type === 'T' || res.data.data.type === 'Z') {
+            else if(res.data.data.type === 'E') {
               this.$router.push({
-                  path: '/teacher'
+                  path: '/ejudge'
+              })
+            }
+            else if(res.data.data.type === 'T') {
+              this.$router.push({
+                  path: '/tjudge'
               })
             }
             else if(res.data.data.type === 'C') {
               this.$router.push({
-                  path: '/newsmanage'
+                  path: '/admin'
               })
             }
               
@@ -85,7 +90,7 @@ export default {
     width: 50%;
     margin-right: 30%;
 }
-.login {
+.login, #app {
   background-color: #81A0AA;
 }
 .name {
