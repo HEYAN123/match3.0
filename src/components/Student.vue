@@ -75,11 +75,19 @@
                                 <h3>队长姓名：{{leaderName}}</h3><br>
                                 <h3>队伍成员：{{member1+' '}}{{member2}}</h3>
                             </Card>
-                            <Card>
+                            <Card class="newsTable">
                                 <h3 slot="title" style="height: 24px;line-hight: 24px;font-size: 20px;">通知</h3>
-                                <CellGroup style="text-align: left;" v-model="nowItem"  @on-click="newsHandle">
-                                    <Cell  v-for="(item) in items" :name='item.newsId' :key="item.newsTitle" :title='item.newsTitle' :extra='item.newsTime' />
-                                </CellGroup>
+                                <Table :border='false' :columns="itemsTitle" :data="items" :show-header='false'>
+                                <template slot-scope="{ row }" slot="newsTime">
+                                    {{row.newsTime}}
+                                </template>
+                                <template slot-scope="{ row }" slot="newsTitle">
+                                    {{row.newsTitle}}
+                                </template>
+                                <template slot-scope="{ row }" slot="action">
+                                    <Button type="primary" size="small" style="margin-right: 5px" @click="newsHandle(row.newsId)">查看</Button>
+                                </template>
+                                </Table>
                                 <Modal
                                     v-model="modal2"
                                     title="通知"
@@ -88,8 +96,8 @@
                                     <h2>{{nowItem.newsTitle}}</h2>
                                     <p>{{nowItem.newsTime}}</p><br>
                                     <p v-html="nowItem.newsContent" style="text-align:left;"></p>
-                                </Modal>
-                            </Card>
+                                </Modal><br>
+                        </Card>
                         </div>
                         </Col>
                         <Col span="18">
@@ -171,6 +179,23 @@ export default {
                 nowItem: {
                 },
                 items: [],
+                itemsTitle: [
+                    {
+                        
+                        slot: 'newsTime',
+                        align: 'center'
+                    },
+                    {
+                        
+                        slot: 'newsTitle',
+                        align: 'center'
+                    },
+                    {
+                       
+                        slot: 'action',
+                        align: 'center'
+                    }
+                ],
                 workName: "--",
                 link: "--",
                 workUrl: "--",
@@ -252,18 +277,17 @@ export default {
             });
         },
     methods: {
-        newsHandle (index) {
-            this.modal2 = true;
-            this.axios.get(this.API+'newsContent/'+this.items[index-1].newsId,{headers:{"token": this.Cookies.get('token')}}).
-            then(res => {
-                if(res.data.code === 0) {
-                    this.nowItem = res.data.data;
-                }
-                else {
-                    this.$Message.error(res.data.message);
-                }
-            })
-        },
+        newsHandle(newsId) {
+        this.modal2 = true;
+        this.axios.get(this.API+'newsContent/'+newsId,{headers:{"token": this.Cookies.get('token')}}).
+        then(res => {
+            if(res.data.code === 0) {
+                this.nowItem = res.data.data;
+            }
+            else {
+                this.$Message.error(res.data.message);
+            }
+        })},
         logout () {
             this.Cookies.remove('token');
             this.Cookies.remove('userId');
@@ -300,6 +324,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .layout{
     position: relative;
     overflow: hidden;
@@ -328,5 +353,10 @@ export default {
 }
 .ivu-layout {
     background-color: #81A0AA;
+}
+</style>
+<style>
+.newsTable .ivu-card-body {
+    padding: 0;
 }
 </style>
